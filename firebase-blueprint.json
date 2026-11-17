@@ -1,0 +1,196 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Private user account preferences and profile metadata isolated per user.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Firebase Authentication user UID."
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "User display name."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "minLength": 3,
+          "maxLength": 254,
+          "description": "User email address."
+        },
+        "photoURL": {
+          "type": "string",
+          "maxLength": 2048,
+          "description": "Optional profile avatar URL."
+        },
+        "defaultExportFormat": {
+          "type": "string",
+          "enum": ["PNG", "SVG", "JPEG", "PDF"]
+        },
+        "defaultExportSize": {
+          "type": "number"
+        },
+        "defaultEcc": {
+          "type": "string",
+          "enum": ["L", "M", "Q", "H"]
+        },
+        "defaultMargin": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "displayName", "email", "createdAt", "updatedAt"]
+    },
+    "SavedProject": {
+      "title": "SavedProject",
+      "description": "Saved QR code or barcode design owned by a single authenticated user.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["qr", "barcode"]
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "payload": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "favorite": {
+          "type": "boolean"
+        },
+        "thumbnailDataUrl": {
+          "type": "string",
+          "maxLength": 200000
+        },
+        "qrForm": {
+          "type": "object"
+        },
+        "qrDesign": {
+          "type": "object"
+        },
+        "barcodeConfig": {
+          "type": "object"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "ownerId", "name", "kind", "category", "payload", "favorite", "createdAt", "updatedAt"]
+    },
+    "HistoryEntry": {
+      "title": "HistoryEntry",
+      "description": "Creation and download audit history record owned by a single authenticated user.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "action": {
+          "type": "string",
+          "enum": ["created", "downloaded", "updated"]
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["qr", "barcode"]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "payload": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "format": {
+          "type": "string",
+          "enum": ["PNG", "SVG", "JPEG", "PDF"]
+        },
+        "projectSnapshot": {
+          "type": "object"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "ownerId", "action", "kind", "title", "category", "payload", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/private/{docId}": {
+      "schema": {
+        "$ref": "#/entities/UserProfile"
+      },
+      "description": "Isolated private user profile and studio preferences (strictly owner-only)."
+    },
+    "/users/{userId}/projects/{projectId}": {
+      "schema": {
+        "$ref": "#/entities/SavedProject"
+      },
+      "description": "Saved QR code and barcode designs isolated per user."
+    },
+    "/users/{userId}/history/{entryId}": {
+      "schema": {
+        "$ref": "#/entities/HistoryEntry"
+      },
+      "description": "User creation and download history entries isolated per user."
+    }
+  }
+}
